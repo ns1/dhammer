@@ -32,6 +32,13 @@ go build .
 ```
 sudo ./dhammer dhcpv4 --interface wlan1 --mac-count 10000 --rps 100 --maxlife 0
 ```
+
+ #### Use the flag --hostname to send the client's host name [(option 12)](#https://datatracker.ietf.org/doc/html/rfc2132#section-3.14). The format of hostname is host-\<mac\> (without ':')
+
+```
+sudo ./dhammer dhcpv4 --interface wlan1 --mac-count 10000 --rps 100 --maxlife 0 --hostname
+```
+
 #### Target a specific server via DHCP relay
 ```
 sudo ./dhammer dhcpv4 --interface wlan1 --mac-count 10000 --gateway-mac "48:f8:b6:f7:30:28" --rps 1000 --maxlife 0 --relay-target-server-ip 192.168.1.1 --relay-source-ip 192.168.1.143

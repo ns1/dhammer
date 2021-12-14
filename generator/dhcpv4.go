@@ -3,17 +3,18 @@ package generator
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/layers"
-	"github.com/ipchama/dhammer/config"
-	"github.com/ipchama/dhammer/socketeer"
-	"github.com/ipchama/dhammer/stats"
 	"math/rand"
 	"net"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/layers"
+	"github.com/ipchama/dhammer/config"
+	"github.com/ipchama/dhammer/socketeer"
+	"github.com/ipchama/dhammer/stats"
 )
 
 type GeneratorV4 struct {
@@ -101,14 +102,25 @@ func (g *GeneratorV4) Run() {
 		outDhcpLayer.Flags = 0x0
 	}
 
+	index := 0
+
 	baseOptionCount := 2
+	hostName := toHostName(macs[0].String())
+	if g.options.HostName {
+		baseOptionCount++
+	}
 	additionalOptionCount := len(g.options.AdditionalDhcpOptions)
 
 	outDhcpLayer.Options = make(layers.DHCPOptions, baseOptionCount+additionalOptionCount+1) // +1 for DHCPOptEnd
 
-	outDhcpLayer.Options[0] = layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeDiscover)})
-	outDhcpLayer.Options[1] = layers.NewDHCPOption(layers.DHCPOptParamsRequest, []byte{byte(0x01), byte(0x28), byte(0x03), byte(0x0f), byte(0x06)})
-
+	outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeDiscover)})
+	index++
+	outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOptParamsRequest, []byte{byte(0x01), byte(0x28), byte(0x03), byte(0x0f), byte(0x06)})
+	index++
+	if g.options.HostName {
+		outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOptHostname, []byte(hostName))
+		index++
+	}
 	// Add in any additional DHCP options that were passed in the CLI
 	for i := 0; i < additionalOptionCount; i++ {
 
@@ -217,6 +229,16 @@ func (g *GeneratorV4) Run() {
 		outDhcpLayer.Xid = nRand.Uint32()
 		outDhcpLayer.ClientHWAddr = macs[i]
 
+		hostName = toHostName(macs[i].String())
+		if g.options.HostName && i != 0 { // Replaces after the first request
+			for _, option := range outDhcpLayer.Options {
+				if option.Type == layers.DHCPOptHostname {
+					option.Data = []byte(hostName)
+					break
+				}
+			}
+		}
+
 		//ethernetLayer.SrcMAC = macs[i]
 
 		// I refuse to even assign to _ ...
@@ -277,4 +299,8 @@ func (g *GeneratorV4) generateMacList() []net.HardwareAddr {
 	}
 
 	return macs
+}
+
+func toHostName(mac string) string {
+	return "host-" + strings.Replace(mac, ":", "", -1)
 }
