@@ -17,10 +17,10 @@ import (
 	"github.com/ipchama/dhammer/stats"
 )
 
-var FLAGS = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x1), byte(0x1), byte(0x1), byte(0x1)}
-var RCODE = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0)}
-var FLAGS_RCODE1 = append(FLAGS[:], RCODE[:]...)
-var FLAGS_RCODE1_RCODE2 = append(FLAGS_RCODE1[:], RCODE[:]...)
+var flags = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x1), byte(0x1), byte(0x1), byte(0x1)}
+var rcode = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0)}
+var FlagsRcode1 = append(flags[:], rcode[:]...)
+var FlagsRcode1Rcode2 = append(FlagsRcode1[:], rcode[:]...)
 
 type GeneratorV4 struct {
 	options       *config.DhcpV4Options
@@ -134,7 +134,7 @@ func (g *GeneratorV4) Run() {
 
 	if len(g.options.FQDN) > 0 {
 		fqdn := []byte(hostName + "." + g.options.FQDN)
-		outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOpt(81), append(FLAGS_RCODE1_RCODE2, fqdn...))
+		outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOpt(81), append(FlagsRcode1Rcode2, fqdn...))
 		index++
 	}
 	// Add in any additional DHCP options that were passed in the CLI
@@ -259,7 +259,7 @@ func (g *GeneratorV4) Run() {
 			for _, option := range outDhcpLayer.Options {
 				if option.Type == layers.DHCPOpt(81) {
 					fqdn := []byte(hostName + "." + g.options.FQDN)
-					option.Data = append(FLAGS_RCODE1_RCODE2, fqdn...)
+					option.Data = append(FlagsRcode1Rcode2, fqdn...)
 					break
 				}
 			}
