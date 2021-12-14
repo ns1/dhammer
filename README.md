@@ -33,10 +33,15 @@ go build .
 sudo ./dhammer dhcpv4 --interface wlan1 --mac-count 10000 --rps 100 --maxlife 0
 ```
 
- #### Use the flag --hostname to send the client's host name [(option 12)](#https://datatracker.ietf.org/doc/html/rfc2132#section-3.14). The format of hostname is host-\<mac\> (without ':')
+#### Use the flag --hostname to send the client's host name [(option 12)](#https://datatracker.ietf.org/doc/html/rfc2132#section-3.14). The format's host name is: host-\<mac\> e.g. host-0242b4bd98ae
 
 ```
-sudo ./dhammer dhcpv4 --interface wlan1 --mac-count 10000 --rps 100 --maxlife 0 --hostname
+sudo ./dhammer dhcpv4 --interface wlan1 --mac-count 10000 --rps 100 --maxlife 0 --fqdn
+```
+#### Use the flag --fqdn to send the client's FQDN (Fully Qualified Domain Name) [(option 81)](#https://datatracker.ietf.org/doc/html/rfc4702). The format's FQDN is: host-\<mac\>.mydomain.com e.g. host-0242b4bd98ae.mydomain.com
+
+```
+sudo ./dhammer dhcpv4 --interface wlan1 --mac-count 10000 --rps 100 --maxlife 0 --fqdn mydomain.com
 ```
 
 #### Target a specific server via DHCP relay

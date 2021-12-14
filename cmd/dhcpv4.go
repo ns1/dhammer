@@ -50,6 +50,7 @@ func prepareCmd(cmd *cobra.Command) *cobra.Command {
 	cmd.Flags().Bool("promisc", false, "Turn on promiscuous mode for the listening interface.")
 
 	cmd.Flags().Bool("hostname", false, "Send the client's host name (option 12) (<host>-<mac> e.g. host-0242b4bd98ae)")
+	cmd.Flags().String("fqdn", "", "Send client's the FQDN (Fully Qualified Domain Name) (option 81) (<host>-<mac>.mydomain.com e.g. host-0242b4bd98ae.mydomain.com)")
 
 	cmd.Flags().String("api-address", "", "IP for the API server to listen on.")
 	cmd.Flags().Int("api-port", 8080, "Port for the API server to listen on.")
@@ -218,6 +219,7 @@ func init() {
 			socketeerOptions.PromiscuousMode = getVal(cmd.Flags().GetBool("promisc")).(bool)
 
 			options.HostName = getVal(cmd.Flags().GetBool("hostname")).(bool)
+			options.FQDN = getVal(cmd.Flags().GetString("fqdn")).(string)
 
 			ApiAddress := getVal(cmd.Flags().GetString("api-address")).(string)
 			ApiPort := getVal(cmd.Flags().GetInt("api-port")).(int)
