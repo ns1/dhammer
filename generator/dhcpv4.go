@@ -2,6 +2,7 @@ package generator
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net"
@@ -21,6 +22,8 @@ var flags = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x1), byte(0
 var rcode = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0)}
 var FlagsRcode1 = append(flags[:], rcode[:]...)
 var FlagsRcode1Rcode2 = append(FlagsRcode1[:], rcode[:]...)
+
+const DHCPOpt81 = layers.DHCPOpt(81)
 
 type GeneratorV4 struct {
 	options       *config.DhcpV4Options
@@ -134,7 +137,7 @@ func (g *GeneratorV4) Run() {
 
 	if len(g.options.FQDN) > 0 {
 		fqdn := []byte(hostName + "." + g.options.FQDN)
-		outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOpt(81), append(FlagsRcode1Rcode2, fqdn...))
+		outDhcpLayer.Options[index] = layers.NewDHCPOption(DHCPOpt81, append(FlagsRcode1Rcode2, fqdn...))
 		index++
 	}
 	// Add in any additional DHCP options that were passed in the CLI
@@ -247,21 +250,17 @@ func (g *GeneratorV4) Run() {
 
 		hostName = toHostName(macs[i].String())
 		if g.options.HostName && i != 0 { // Replaces after the first request
-			for _, option := range outDhcpLayer.Options {
-				if option.Type == layers.DHCPOptHostname {
-					option.Data = []byte(hostName)
-					break
-				}
+			index, err := findIndex(layers.DHCPOptHostname, outDhcpLayer.Options)
+			if err == nil {
+				outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOptHostname, []byte(hostName))
 			}
 		}
 
 		if len(g.options.FQDN) > 0 && i != 0 { // Replaces after the first request
-			for _, option := range outDhcpLayer.Options {
-				if option.Type == layers.DHCPOpt(81) {
-					fqdn := []byte(hostName + "." + g.options.FQDN)
-					option.Data = append(FlagsRcode1Rcode2, fqdn...)
-					break
-				}
+			fqdn := []byte(hostName + "." + g.options.FQDN)
+			index, err := findIndex(DHCPOpt81, outDhcpLayer.Options)
+			if err == nil {
+				outDhcpLayer.Options[index] = layers.NewDHCPOption(DHCPOpt81, append(FlagsRcode1Rcode2, fqdn...))
 			}
 		}
 
@@ -329,4 +328,14 @@ func (g *GeneratorV4) generateMacList() []net.HardwareAddr {
 
 func toHostName(mac string) string {
 	return "host-" + strings.Replace(mac, ":", "", -1)
+}
+
+func findIndex(opt layers.DHCPOpt, options layers.DHCPOptions) (int, error) {
+	for index, option := range options {
+		if option.Type == opt {
+			return index, nil
+		}
+	}
+
+	return 0, errors.New("Index not found")
 }
