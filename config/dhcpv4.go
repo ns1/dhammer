@@ -22,6 +22,9 @@ type DhcpV4Options struct {
 	RelayTargetServerIP net.IP
 	TargetPort          int
 
+	HostName bool
+	FQDN     string
+
 	AdditionalDhcpOptions []string
 
 	RequestsPerSecond int

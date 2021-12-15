@@ -2,19 +2,28 @@ package generator
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/layers"
-	"github.com/ipchama/dhammer/config"
-	"github.com/ipchama/dhammer/socketeer"
-	"github.com/ipchama/dhammer/stats"
 	"math/rand"
 	"net"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/layers"
+	"github.com/ipchama/dhammer/config"
+	"github.com/ipchama/dhammer/socketeer"
+	"github.com/ipchama/dhammer/stats"
 )
+
+var flags = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x1), byte(0x1), byte(0x1), byte(0x1)}
+var rcode = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x0)}
+var FlagsRcode1 = append(flags[:], rcode[:]...)
+var FlagsRcode1Rcode2 = append(FlagsRcode1[:], rcode[:]...)
+
+const DHCPOpt81 = layers.DHCPOpt(81)
 
 type GeneratorV4 struct {
 	options       *config.DhcpV4Options
@@ -101,14 +110,36 @@ func (g *GeneratorV4) Run() {
 		outDhcpLayer.Flags = 0x0
 	}
 
+	index := 0
+
 	baseOptionCount := 2
+	hostName := toHostName(macs[0].String())
+	if g.options.HostName {
+		baseOptionCount++
+	}
+
+	if len(g.options.FQDN) > 0 {
+		baseOptionCount++
+	}
+
 	additionalOptionCount := len(g.options.AdditionalDhcpOptions)
 
 	outDhcpLayer.Options = make(layers.DHCPOptions, baseOptionCount+additionalOptionCount+1) // +1 for DHCPOptEnd
 
-	outDhcpLayer.Options[0] = layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeDiscover)})
-	outDhcpLayer.Options[1] = layers.NewDHCPOption(layers.DHCPOptParamsRequest, []byte{byte(0x01), byte(0x28), byte(0x03), byte(0x0f), byte(0x06)})
+	outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOptMessageType, []byte{byte(layers.DHCPMsgTypeDiscover)})
+	index++
+	outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOptParamsRequest, []byte{byte(0x01), byte(0x28), byte(0x03), byte(0x0f), byte(0x06)})
+	index++
+	if g.options.HostName {
+		outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOptHostname, []byte(hostName))
+		index++
+	}
 
+	if len(g.options.FQDN) > 0 {
+		fqdn := []byte(hostName + "." + g.options.FQDN)
+		outDhcpLayer.Options[index] = layers.NewDHCPOption(DHCPOpt81, append(FlagsRcode1Rcode2, fqdn...))
+		index++
+	}
 	// Add in any additional DHCP options that were passed in the CLI
 	for i := 0; i < additionalOptionCount; i++ {
 
@@ -217,6 +248,22 @@ func (g *GeneratorV4) Run() {
 		outDhcpLayer.Xid = nRand.Uint32()
 		outDhcpLayer.ClientHWAddr = macs[i]
 
+		hostName = toHostName(macs[i].String())
+		if g.options.HostName && i != 0 { // Replaces after the first request
+			index, err := findIndex(layers.DHCPOptHostname, outDhcpLayer.Options)
+			if err == nil {
+				outDhcpLayer.Options[index] = layers.NewDHCPOption(layers.DHCPOptHostname, []byte(hostName))
+			}
+		}
+
+		if len(g.options.FQDN) > 0 && i != 0 { // Replaces after the first request
+			fqdn := []byte(hostName + "." + g.options.FQDN)
+			index, err := findIndex(DHCPOpt81, outDhcpLayer.Options)
+			if err == nil {
+				outDhcpLayer.Options[index] = layers.NewDHCPOption(DHCPOpt81, append(FlagsRcode1Rcode2, fqdn...))
+			}
+		}
+
 		//ethernetLayer.SrcMAC = macs[i]
 
 		// I refuse to even assign to _ ...
@@ -277,4 +324,18 @@ func (g *GeneratorV4) generateMacList() []net.HardwareAddr {
 	}
 
 	return macs
+}
+
+func toHostName(mac string) string {
+	return "host-" + strings.Replace(mac, ":", "", -1)
+}
+
+func findIndex(opt layers.DHCPOpt, options layers.DHCPOptions) (int, error) {
+	for index, option := range options {
+		if option.Type == opt {
+			return index, nil
+		}
+	}
+
+	return 0, errors.New("Index not found")
 }
