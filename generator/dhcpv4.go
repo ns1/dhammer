@@ -13,9 +13,9 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
-	"github.com/ipchama/dhammer/config"
-	"github.com/ipchama/dhammer/socketeer"
-	"github.com/ipchama/dhammer/stats"
+	"github.com/nsone/dhammer/config"
+	"github.com/nsone/dhammer/socketeer"
+	"github.com/nsone/dhammer/stats"
 )
 
 var flags = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x1), byte(0x1), byte(0x1), byte(0x1)}

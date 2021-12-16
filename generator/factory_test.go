@@ -1,8 +1,8 @@
 package generator_test
 
 import (
-	"github.com/ipchama/dhammer/generator"
-	"github.com/ipchama/dhammer/stats"
+	"github.com/nsone/dhammer/generator"
+	"github.com/nsone/dhammer/stats"
 	"testing"
 )
 

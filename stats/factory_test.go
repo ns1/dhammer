@@ -1,7 +1,7 @@
 package stats_test
 
 import (
-	"github.com/ipchama/dhammer/stats"
+	"github.com/nsone/dhammer/stats"
 	"testing"
 )
 

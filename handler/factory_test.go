@@ -1,9 +1,9 @@
 package handler_test
 
 import (
-	"github.com/ipchama/dhammer/handler"
-	"github.com/ipchama/dhammer/message"
-	"github.com/ipchama/dhammer/stats"
+	"github.com/nsone/dhammer/handler"
+	"github.com/nsone/dhammer/message"
+	"github.com/nsone/dhammer/stats"
 	"testing"
 )
 

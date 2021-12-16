@@ -1,4 +1,4 @@
-[![DeepSource](https://static.deepsource.io/deepsource-badge-light.svg)](https://deepsource.io/gh/ipchama/dhammer/?ref=repository-badge)
+[![DeepSource](https://static.deepsource.io/deepsource-badge-light.svg)](https://deepsource.io/gh/nsone/dhammer/?ref=repository-badge)
 
 ![alt text](sledge.jpg "Dhammer")
 
@@ -21,7 +21,7 @@ Just download, compile, and run.
 ### Installing
 
 ```
-go get -u github.com/ipchama/dhammer
+go get -u github.com/nsone/dhammer
 ```
 ### Building
 ```

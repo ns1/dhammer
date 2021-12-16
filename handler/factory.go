@@ -2,10 +2,10 @@ package handler
 
 import (
 	"errors"
-	"github.com/ipchama/dhammer/config"
-	"github.com/ipchama/dhammer/message"
-	"github.com/ipchama/dhammer/socketeer"
-	"github.com/ipchama/dhammer/stats"
+	"github.com/nsone/dhammer/config"
+	"github.com/nsone/dhammer/message"
+	"github.com/nsone/dhammer/socketeer"
+	"github.com/nsone/dhammer/stats"
 )
 
 type Handler interface {

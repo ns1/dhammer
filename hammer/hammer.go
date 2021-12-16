@@ -10,11 +10,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ipchama/dhammer/config"
-	"github.com/ipchama/dhammer/generator"
-	"github.com/ipchama/dhammer/handler"
-	"github.com/ipchama/dhammer/socketeer"
-	"github.com/ipchama/dhammer/stats"
+	"github.com/nsone/dhammer/config"
+	"github.com/nsone/dhammer/generator"
+	"github.com/nsone/dhammer/handler"
+	"github.com/nsone/dhammer/socketeer"
+	"github.com/nsone/dhammer/stats"
 
 	"github.com/corneldamian/httpway"
 	"github.com/gorilla/handlers"

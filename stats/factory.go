@@ -2,7 +2,7 @@ package stats
 
 import (
 	"errors"
-	"github.com/ipchama/dhammer/config"
+	"github.com/nsone/dhammer/config"
 )
 
 type Stat struct {

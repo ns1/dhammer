@@ -1,4 +1,4 @@
-module github.com/ipchama/dhammer
+module github.com/nsone/dhammer
 
 go 1.14
 

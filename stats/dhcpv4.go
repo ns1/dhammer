@@ -3,7 +3,7 @@ package stats
 import (
 	"encoding/json"
 	//"fmt"
-	"github.com/ipchama/dhammer/config"
+	"github.com/nsone/dhammer/config"
 	"sync"
 	"time"
 )
