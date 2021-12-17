@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
+	"dhammer/config"
+	"dhammer/socketeer"
+	"dhammer/stats"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
-	"github.com/nsone/dhammer/config"
-	"github.com/nsone/dhammer/socketeer"
-	"github.com/nsone/dhammer/stats"
 )
 
 var flags = []byte{byte(0x0), byte(0x0), byte(0x0), byte(0x0), byte(0x1), byte(0x1), byte(0x1), byte(0x1)}

@@ -2,9 +2,9 @@ package generator
 
 import (
 	"errors"
-	"github.com/nsone/dhammer/config"
-	"github.com/nsone/dhammer/socketeer"
-	"github.com/nsone/dhammer/stats"
+	"dhammer/config"
+	"dhammer/socketeer"
+	"dhammer/stats"
 )
 
 type Generator interface {

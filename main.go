@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/nsone/dhammer/cmd"
+	"dhammer/cmd"
 	"os"
 	"os/signal"
 	"syscall"

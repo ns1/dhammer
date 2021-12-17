@@ -1,12 +1,12 @@
 package handler
 
 import (
+	"dhammer/config"
+	"dhammer/message"
+	"dhammer/socketeer"
+	"dhammer/stats"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
-	"github.com/nsone/dhammer/config"
-	"github.com/nsone/dhammer/message"
-	"github.com/nsone/dhammer/socketeer"
-	"github.com/nsone/dhammer/stats"
 	"github.com/vishvananda/netlink"
 	"net"
 	"time"
