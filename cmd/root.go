@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/nsone/dhammer/hammer"
+	"dhammer/hammer"
 	"github.com/spf13/cobra"
 )
 

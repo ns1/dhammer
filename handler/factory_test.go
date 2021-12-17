@@ -1,9 +1,9 @@
 package handler_test
 
 import (
-	"github.com/nsone/dhammer/handler"
-	"github.com/nsone/dhammer/message"
-	"github.com/nsone/dhammer/stats"
+	"dhammer/handler"
+	"dhammer/message"
+	"dhammer/stats"
 	"testing"
 )
 

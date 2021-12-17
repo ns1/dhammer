@@ -1,9 +1,8 @@
 package stats
 
 import (
+	"dhammer/config"
 	"encoding/json"
-	//"fmt"
-	"github.com/nsone/dhammer/config"
 	"sync"
 	"time"
 )

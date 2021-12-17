@@ -1,11 +1,11 @@
 package socketeer
 
 import (
+	"dhammer/config"
+	"dhammer/message"
 	"encoding/binary"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
-	"github.com/nsone/dhammer/config"
-	"github.com/nsone/dhammer/message"
 	"golang.org/x/sys/unix"
 	"net"
 	"runtime"
